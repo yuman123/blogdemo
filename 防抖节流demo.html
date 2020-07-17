@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="inputbox" >
+    <button id="btn">点击我</button>
+    
+</body>
+<script>
+    //防抖（debounce）就是在一定的时间内没有操作就执行该函数，如果在此时间内操作了则重新计时,比如搜索框的输入
+    function con(value){
+        console.log(value);
+    }
+    function fangdou(fn,delay){//非立即执行 定时器
+        let timer;
+        let that = this
+        return function(arg){
+            if(timer){ clearTimeout(timer);}//如果在这个时间段操作了则timer存在，不为空，所以需要清空再次重新计数
+             timer = setTimeout(()=>{fn.call(that,arg)},delay);
+        }
+    }
+    var box = document.getElementById('inputbox');
+    var torrat = fangdou(con,3000)
+    box.addEventListener('keyup',function(){
+        torrat(box.value)
+        })
+//节流就是一定的时间内只发送一次请求，实际应用 验证码
+//防抖动和节流本质是不一样的。防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
+function jieliu(fn,delay){//定时器节流
+        let timer;
+        let that = this
+        return function(arg){
+            clearTimeout(timer)
+             timer = setTimeout(()=>{
+                 fn.call(that,arg);     
+            },delay);     
+        }
+}
+var btn = document.getElementById('btn');
+var jieliudemo = jieliu(con,3000)
+btn.addEventListener("click",function(){
+    jieliudemo(btn.innerText)
+})
+
+//懒加载
+// var viewHeight = document.documentElement.clientHeight;
+// function lazyLoad(){
+//     var eles = document.querySelectorAll('img[data-original][lozyload]');
+//     Array.prototype.forEach(eles,function(item,index){
+//         var rect;
+//         if(item.dataset.original === '')return;
+//         rect = item.getBoundingClientRect();
+//         if(rect.bottom > 0 && rect.top < viewHeight){//图片进入到可视区域，动态加载
+//             !function(){//函数申明前加+-*/ ！等会使其变成函数表达式，从而达到自执行的效果
+//                 var img = new Image();
+//                 img.src = item.dataset.original;
+//                 img.onload = function(){
+//                     item.src = img.src;
+//                 }
+//                 item.removeAttribute('data-original');
+//                 item.removeAttribute('lazyload');
+
+//             }()
+//         }
+//     })
+// }
+
+// lazyLoad();// 首屏要人为的调用，否则刚进入页面不显示图片
+// document.addEventListener('scroll',lazyLoad);
+</script>
+</html>

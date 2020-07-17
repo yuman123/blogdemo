@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="/admin/js/jquery.min.js"></script>
+    <script src="/admin/js/distpicker.data.js"></script>
+    <script src="/admin/js/distpicker.js"></script>
+</head>
+<style>
+    #distpicker1 .form-control,.form-control {
+        width: 30%;
+        display: inline-block;
+    }
+</style>
+
+<body>
+    {{include './common/header.art'}}
+    <div class="flex-box">
+        {{include './common/sidebar.art'}}
+        <div class="flex-right">
+            <div id="distpicker1" data-toggle="distpicker">
+                <select id="provice" data-province="---- 选择省 ----" class="form-control">
+                </select>
+                <select id="city" class="form-control" data-city="---- 选择市 ----">
+                </select>
+                <select id="district" class="form-control" data-district="---- 选择区 ----">
+                </select>
+            </div>
+
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+
+                        <th>姓名</th>
+                        <th>邮箱</th>
+                        <th>状态</th>
+                        <th>角色</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{each persons}}
+                    <tr>
+                        <td>{{$value.name}}</td>
+                        <td>{{$value.email}}</td>
+                        <td>{{$value.state == "0"?'启用':'禁用'}}</td>
+                        <td>{{$value.rule}}</td>
+                        <td>
+                            <a type="button" class="btn btn-danger btn-sm"
+                                href=/admin/userdelete?_id={{$value._id.toString()}}>删除 </a> <a type="button"
+                                class="btn btn-success btn-sm"
+                                href=/admin/userEdit?_id={{$value._id.toString()}}&page={{page}}>修改 </a> </td> </tr>
+                                {{/each}} </tbody> </table> <ul class="pagination">
+                                <li>
+                                    <a href="/admin/user?page={{page == 1 ? page : page-1}}">
+                                        <!--减号有隐式数据转换 -->
+                                        <span>&laquo;</span>
+                                    </a>
+                                </li>
+                                <% for (var i = 1;i <= total;i++) { %>
+                                <li class="{{page == i ?'active': ''}}"><a href="/admin/user?page={{i}}">{{i}}</a></li>
+                                <% } %>
+                                <li>
+                                    <a href="/admin/user?page={{page == total ? total : page - (-1)}}">
+                                        <!--这里用加会默认字符串拼接，导致页数错误，page-0+1 -->
+                                        <span>&raquo;</span>
+                                    </a>
+                                </li>
+                                </ul>
+                                <span>当前第{{page}}页 共{{total}}页</span>
+                                <div id="demo">
+                                    <h3>自己写的省市区三级联动</h3>
+                                    <select id="demo-provice" class="form-control">
+                                    </select>
+                                    <select id="demo-city" class="form-control">
+                                    </select>
+                                    <select id="demo-district" class="form-control">
+                                    </select>
+                                </div>
+        </div>
+    </div>
+    <script>
+        $("#distpicker1").distpicker({
+            autoSelect: false//插件的使用
+        });
+        // console.log(ChineseDistricts);
+        var provice = ChineseDistricts['86'];
+        var city = '';
+        var district = '';
+        window.onload = function () {//先加载省数据
+            $('#demo-provice').append(`<option data-code='0' value='---- 选择省 ----'>---- 选择省 ----</option>`)
+            $('#demo-city').append(`<option data-code='0'>---- 选择市 ----</option>`)
+            $('#demo-district').append(`<option data-code='0'>---- 选择区 ----</option>`)
+            for (let attr in provice) {
+                $('#demo-provice').append(
+                    `<option data-code=${attr} value=${provice[attr]}>${provice[attr]}</option>`)
+            }
+        }
+        $('#demo-provice').change(function () {//省级数据改变时渲染市级数据
+                let value = $(this).val();
+                let code = Object.keys(provice).find(k => {
+                    return provice[k] == value
+                });
+                if (code) {
+                    city = ChineseDistricts[code];
+                    $('#demo-city').empty();
+                    $('#demo-city').append(`<option data-code='0'>---- 选择市 ----</option>`)
+                    $('#demo-district').empty();
+                    $('#demo-district').append(`<option data-code='0'>---- 选择区 ----</option>`)
+                    for (let attr in city) {
+                        $('#demo-city').append(
+                            `<option data-code=${attr} value=${city[attr]}>${city[attr]}</option>`)
+                    }
+                }
+            })
+        $('#demo-city').change(function(){//市级数据改变渲染区数据
+                let value = $(this).val();
+                let code = Object.keys(city).find(k => {
+                    return city[k] == value
+                });
+                if (code) {
+                    district = ChineseDistricts[code];
+                    $('#demo-district').empty();
+                    $('#demo-district').append(`<option data-code='0'>---- 选择区 ----</option>`)
+                    for (let attr in district) {
+                        $('#demo-district').append(
+                            `<option data-code=${attr} value=${district[attr]}>${district[attr]}</option>`)
+                    }
+                }
+            })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user-edit</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.js"></script>
+</head>
+<body>
+    {{include './common/header.art'}}
+    <div class="flex-box">
+        {{include './common/sidebar.art'}}
+        <div class="flex-right">
+            <h3 >添加文章</h3><!--文件上传必须以二进制数据提交，跟普通表单不同
+            enctype 指定表单数据的编码类型
+            默认的是 application/x-www-form-urlencoded
+            multipart/form-data 将表单数据编码成二进制类型
+            -->
+            <form class="form-horizontal" role="form" action="/admin/article-add" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label">标题</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="title" >
+                    </div>  
+                </div>
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label">作者</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  value="{{@userInfo.name}}" readonly><!-- 这里巧妙利用两个input框
+                        使得页面上传的跟页面上显示的不同 -->
+                        <input type="text" value="{{@userInfo._id}}" style="display: none;" name="author">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label">内容</label>
+                    <div class="col-sm-10" >
+                       <textarea class="form-control" id="editor" name="content"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lastname"  style="padding-left: 15px;">发布时间</label>
+                   
+                        <input type="date"  name="publishedDate">
+                </div>
+                <div class="form-group">
+                    <label for="lastname" style="padding-left: 15px;">上传文件</label>
+                        <input type="file" name="cover" id="file">
+                        <div>
+                             <img src="" id="preview" style="width: 500px;" ><!-- -->
+                        </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+    
+</body>
+<script>
+    var editor = new Jodit('#editor');
+    var file = document.querySelector('#file');
+    var preview = document.querySelector("#preview")
+    file.onchange = function(){//用户选择了文件时触发
+        var reader = new FileReader();//创建文件读取对象
+        reader.readAsDataURL(this.files[0]);//读取文件 
+        reader.onload = function(){//监听onload事件，因为读取文件是异步的
+            preview.src = reader.result
+
+        }
+    }
+    
+
+</script>
+</html>

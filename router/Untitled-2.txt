@@ -1,0 +1,49 @@
+// 首页左上角图片新闻切�?
+//$(".focusImg").slide({ mainCell:".slidePic",effect:"left", autoPlay:true, interTime:5000,delayTime:300});
+(function($) {
+		// 页面选项�?
+    function tabBtn(_dom,_class,tabClass){
+    	$(this).parent().parent().siblings(tabClass).hide();
+      _dom.hover(function(){
+        $(this).addClass(_class).siblings().removeClass(_class);
+        $(this).parent().parent().siblings(tabClass).hide();
+        $(this).parent().parent().siblings(tabClass).eq($(this).index()).show();
+      })
+    }
+    function tabBtn1(_dom1,_class1,tabClass1){
+    	$(this).parent().parent().siblings(tabClass1).hide();
+      _dom1.hover(function(){
+        $(this).addClass(_class1).siblings().removeClass(_class1);
+        $(this).parent().siblings(tabClass1).hide();
+        $(this).parent().siblings(tabClass1).eq($(this).index()).show();
+      })
+    }
+    // �?���?�?��拉菜�?
+    $('.navBox .area-nav').hover(function(){
+      $(this).find('.area-list').show();
+    },function(){
+      $(this).find('.area-list').hide().animate({height: 380});
+      $('.push-btn').show();
+    });
+    $('.area-nav .push-btn').on('click',function(){
+      $(this).parent('.area-list').css({"height": "auto"});
+      $(this).hide();
+    })
+    tabBtn($('.zstBox .title .subTit a'),'menu_On','.zstCon');//走势图选项�?
+		tabBtn1($('.topNews .menu-btn a,.newsBox .menu-btn a'),'btnon','.news-item');//栏目标�?下方选项�?
+		tabBtn($('.newsBox .title .subTit a'),'menu_On','.news-item');//栏目标�?右边选项�?
+		tabBtn($('.supply-item .supply-tab a'),'at','.table-list');//栏目标�?右边选项�?
+
+		tabBtn($('.price-left .table-tit .subTit a'), 'menu_On', '.table-list') //主站首页市场行情/今日价格选项�?
+
+		// 近日价格tr背景变化
+    function trHover(){
+    	$(".row .table-list tbody tr").hover(function(){
+    		$(this).toggleClass("trOn")
+    	})
+    }
+    trHover();
+
+    $('.ideafeedBackBtn').hide();
+    $('#fixed-box .li3').show();
+   })(jQuery);

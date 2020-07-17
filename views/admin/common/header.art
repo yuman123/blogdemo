@@ -1,0 +1,11 @@
+<div class="header">
+   <div id="head"><span>{{userInfo && userInfo.name ?'欢迎来到我的博客':登录}}</span></div>
+   <div class="right">用户名{{userInfo &&userInfo.name}}<a href="/admin/logout">退出登录</a></div>
+</div>
+<style>
+    .header{
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 10px;
+    }
+</style>

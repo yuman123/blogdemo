@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<style>
+    html,body{
+        margin: 0;
+        padding: 0;
+    }
+    #popup {
+        display: flex;
+        margin: 0 auto;
+        margin-top:20px;
+    }
+
+    #popup .background {
+        align-self: center;
+        width: 300px;
+        height: 200px;
+        margin: 0 auto;
+        position: relative;
+        /* position: relative;
+        top: 50%;
+        margin-top: -100px; */
+        background-color: #ddd;
+
+    }
+
+    #popup .background h4 {
+        text-align: center;
+    }
+
+    #popup .background .btnbox {
+        bottom: 10px;
+        position: absolute;
+        right: 25px;
+    }
+    .btn-box{
+        pointer-events: none; /*禁止点击事件 */
+    }
+</style>
+
+<body>
+    {{include './common/header.art'}}
+    <div class="flex-box">
+        {{include './common/sidebar.art'}}
+        <div class="flex-right">
+            <div><a href="/admin/article-add" class="btn btn-primary">添加新文章</a></div>
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>标题</th>
+                        <th>作者</th>
+                        <th>发布时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{each article}}
+
+                    <tr>
+                        <td>{{@$value._id}}</td>
+                        <td>{{$value.title}}</td>
+                        <td>{{userInfo.name}}</td>
+                        <td>{{dateFormate($value.publishedDate,'yyyy-mm-dd')}}</td>
+                        <td>
+                            <a type="button" class="btn btn-danger btn-sm"
+                                onclick="showdialog('{{$value._id.toString()}}')">删除</a>
+                            <a type="button" class="btn btn-success btn-sm b"
+                                href=/admin/articleEdit?_id={{$value._id.toString()}}&page={{page}}>修改 </a> </td> </tr>
+                                {{/each}} </tbody> </table> <ul class="pagination">
+                                {{if page > 1}}
+                                <li>
+                                    <a href="/admin/article?page={{page == 1 ? page : page-1}}">
+                                        <!--减号有隐式数据转换 -->
+                                        <span>&laquo;</span>
+                                    </a>
+                                </li>
+                                {{/if}}
+                                <% for (var i = 1;i <= total;i++) { %>
+                                <li class="{{page ==i ? 'active' : ''}}"><a href="/admin/article?page={{i}}">{{i}}</a>
+                                </li>
+                                <% } %>
+                                {{if page < total}}
+                                <li>
+                                    <a href="/admin/article?page={{page == total ? total : page - (-1)}}">
+                                        <!--这里用加会默认字符串拼接，导致页数错误，page-0+1 -->
+                                        <span>&raquo;</span>
+                                    </a>
+                                </li>
+                                {{/if}}
+                                </ul>
+                                <span>当前第{{page}}页 共{{total}}页</span>
+                                
+        </div>
+        <div id="popup" style="display: none;">
+            <div class="background">
+                <h4>确认要删除吗</h4>
+                <div class="btnbox">
+                    <a class="btn btn-danger btn-sm " id="item">确认</a>
+                    <a class="btn btn-success  btn-sm" onclick="hiddenDialog()">取消</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var delid;
+
+    function showdialog(id) {
+        // this.location.href ='/admin/delete?_id='+id;
+        // console.log("删除成功");
+        console.log(document.querySelector('#popup'));
+        var popup = document.querySelector('#popup');
+        var flex =  document.querySelector(".flex-right")
+        flex.style.backgroundColor = "#ccc";
+        flex.style.opacity = 0.32;
+      flex.classList.add("btn-box")
+        popup.style.display = "block";
+        delid = id
+    
+    }
+    $(document).ready(function () {
+        $("#item").click(function () {//ajax请求局部刷新，不能进行重定向
+            console.log(delid);
+            $.ajax({
+                url: "/admin/delete?_id=" + delid,
+                type:'get',
+                success:function(data,status){
+                    console.log(status,data);
+                    
+                }
+            });
+            var popup = document.querySelector('#popup');
+            popup.style.display = "none";
+            window.location.href="/admin/article";//重定向
+        });
+    });
+    function hiddenDialog(){
+        var popup = document.querySelector('#popup');
+            popup.style.display = "none";
+            var flex =  document.querySelector(".flex-right")
+        flex.style.backgroundColor = "";
+        flex.style.opacity = 1;
+      flex.classList.remove("btn-box")
+    }
+</script>
+
+</html>

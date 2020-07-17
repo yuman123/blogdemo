@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>shouye</title>
+</head>
+<style>
+  li{
+    text-decoration: none;
+    list-style: none;
+  }
+  .firstTab{width: 800px;height: 40px; border: 1px solid black;margin-bottom: 10px;padding-bottom: 14px;}
+  .firstTab ul li{
+    float: left;
+    margin-right: 10px;
+  }
+  ul li span{
+    width: 20px;
+    display: inline-block;
+    text-align: right;
+    cursor: pointer;
+  }
+  ul li.active{
+    border: 1px solid blueviolet;
+   
+  }
+  .righttab{
+    font-size: 18px;
+    float: right;
+    margin-right: 100px;
+  }
+  ul li{
+    border: none;
+  }
+  .firstTab::after{clear: both;}
+  section{display: none;}
+  .tabcon{
+    width: 500px;
+    height: 300px;
+  }
+  .tabcon .selected{
+    border: 1px solid black;
+    margin-left: 20px;
+    font-size: 16px;
+    display: block;
+    width: 500px;
+    height: 300px;
+  }
+  section.selected input{
+    width: 300px;
+    height: 200px;
+  }
+</style>
+<body>
+  
+  <div id="app">
+    <input type="text" v-model="text">
+    {{ text }}
+  </div>
+  <div class="tabBox" id="tab" style="border: 1px solid black;width: 800px;margin-top: 20px;">
+    <nav class="firstTab" >
+      <ul>
+        <li class="active"><label>测试1</label><span class="close">x</span></li>
+        <li><label>测试2</label><span  class="close">x</span></li>
+        <li><label>测试3</label><span  class="close">x</span></li>
+      </ul> 
+        <div class="righttab"><span>+</span></div>
+    </nav>
+    <div class="tabcon">
+        <section class="selected">测试1</section>
+        <section>测试2</section>
+        <section>测试3</section>
+      </div>
+  </div>
+  
+  <script>
+    var that;
+    class Tab{
+      constructor(id){
+        that = this
+        this.main = document.querySelector(id);
+        this.lis = this.main.querySelectorAll('li');
+        this.ul = this.main.querySelector('ul');
+        this.sections = this.main.querySelectorAll('section');
+        this.tabcon = this.main.querySelector('.tabcon');
+        this.add = this.main.querySelector('.righttab');
+        this.init();
+
+      }
+      init(){
+        this.updateNode();
+        for(let i = 0; i < this.lis.length;i++){
+          this.close[i].onclick = this.deleteTab
+          this.lis[i].index = i;
+          this.lis[i].onclick = this.toggleTab
+          this.labels[i].ondblclick = this.editTab
+          this.sections[i].ondblclick = this.editTab
+        }
+        this.add.onclick = this.addTab;
+      }
+      updateNode(){
+        this.lis = this.main.querySelectorAll('li');
+        this.sections = this.main.querySelectorAll('section');
+        this.close = this.main.querySelectorAll('.close');
+        this.labels = this.main.querySelectorAll('.firstTab li label');
+        
+      }
+      clearclass(){
+        for(let i = 0; i < that.lis.length;i++){
+          that.lis[i].className = '';
+          that.sections[i].className = '';
+        }
+      }
+      toggleTab(){
+        console.log(this.index);
+        
+        that.clearclass()
+        this.className = 'active';
+        that.sections[this.index].className = 'selected'
+        
+      } 
+      addTab(){
+        that.clearclass()
+        that.ul.insertAdjacentHTML('beforeend','<li class="active"><label>测试</label><span class="close">x</span></li>')
+        that.tabcon.insertAdjacentHTML('beforeend','<section class="selected">测试</section>');
+        that.init()
+      }
+      deleteTab(e){
+        e.stopPropagation();
+        var index = this.parentNode.index;
+        console.log(index);
+        that.lis[index].remove();
+        that.sections[index].remove();
+        if(document.querySelectorAll('.active').length) return
+        else{ 
+        that.lis.length >= 1 && that.lis[index-1].click();
+        }
+        that.init()
+      
+      }
+      editTab(){
+        var str = this.innerHTML;
+        console.log(str);
+        
+        window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();//双击禁止选定文字
+        this.innerHTML = "<input type='text' style='border:1px solid lightblue;display: inline-block;'/>";  
+        var input = this.children[0];
+        input.value = str;
+        input.select();
+        input.onblur = function(){
+          this.parentNode.innerHTML = this.value;
+        } 
+        input.onkeyup = function(e){
+          if(e.keyCode == 13){
+            this.blur()
+          }
+        }
+      }
+    }
+     new Tab('#tab');
+  </script>
+
+  <script>
+    // var f = new Function('a','b','console.log(a+b)' );
+    // f(9,9)
+    var name = 'the window';
+    // var obj = {
+    //   name:'object',
+    //   getName:function(){
+    //     var that = this
+    //     return function(){
+    //       return that.name
+    //     }
+    //   }
+    // }
+    var obj = {
+      name:'object',
+      getName:function(){
+        return function(){
+          return this.name
+        }
+      }
+    }
+    console.log(obj.getName()());
+    function fn(n){
+      if(n == 1)return 1
+      return n * fn(n-1)
+    }
+console.log(fn(6));
+
+function fn2(n){
+  if(n == 2 || n == 1){
+    return 1
+  }
+  return fn2(n-1)+fn2(n-2)
+}
+  console.log(fn2(4));
+
+  var reg = /[abc]/;//[]表示出现里面任一字符即为ture
+  console.log(reg.test('andy'));
+  var reg1 = /^[abc]$/;//三选一，只能是a或者b或者c
+  console.log(reg1.test('aa'));//false
+
+  var reg2 = /[^0-9]/;//[]里有^代表取反
+  console.log(reg2.test(7));
+  // + 表示出现1次及以上
+  // * 表示出现0次及以上
+  // ？表示出现1次或0 次
+  // {3} 出现3次
+  // {3，} 三次及以上
+  // {3,10} 出现次数大于等于3小于等于10
+  var reg3 = /^\d{3}-\d{8}|\d{4}-\d{7}$/
+  console.log('--------------');
+  
+  console.log(reg3.test('010-12345678'));
+  console.log(reg3.test('1530-1234567'  ));
+  // var num = 20
+  // if(true){
+  //   console.log(num);
+  //   let num = 10; 
+    
+  // }//暂时性死区
+  function b(){
+    console.log(this);
+    return () => {
+      console.log(this);//这里的this指向b函数指向的this
+      
+    }
+  }
+  const res = b.call(obj)
+  res()
+  const s1 = new Set([1,2,3,45,1,'aa','a','aa']) ;
+  console.log(s1);
+  // js在使用时的两大问题：文件依赖和命名冲突
+  //
+  
+  
+
+  
+  
+  
+    
+    function observe (obj, vm) {
+      Object.keys(obj).forEach(function (key) {
+        defineReactive(vm, key, obj[key]);
+      })
+    }
+
+    function defineReactive (obj, key, val) {
+      var dep = new Dep();
+
+      Object.defineProperty(obj, key, {
+        get: function () {
+          // 添加订阅者 watcher 到主题对象 Dep
+          if (Dep.target) dep.addSub(Dep.target);
+          return val
+        },
+        set: function (newVal) {
+          if (newVal === val) return
+          val = newVal;
+          // 作为发布者发出通知
+          dep.notify();
+        }
+      });
+    }
+
+    function nodeToFragment (node, vm) {
+      var flag = document.createDocumentFragment();
+      var child;
+      // 许多同学反应看不懂这一段，这里有必要解释一下
+      // 首先，所有表达式必然会返回一个值，赋值表达式亦不例外
+      // 理解了上面这一点，就能理解 while (child = node.firstChild) 这种用法
+      // 其次，appendChild 方法有个隐蔽的地方，就是调用以后 child 会从原来 DOM 中移除
+      // 所以，第二次循环时，node.firstChild 已经不再是之前的第一个子元素了
+      while (child = node.firstChild) {
+        compile(child, vm);
+        flag.appendChild(child); // 将子节点劫持到文档片段中
+      }
+
+      return flag
+    }
+
+    function compile (node, vm) {
+      var reg = /\{\{(.*)\}\}/;
+      // 节点类型为元素
+      if (node.nodeType === 1) {
+        var attr = node.attributes;
+        // 解析属性
+        for (var i = 0; i < attr.length; i++) {
+          if (attr[i].nodeName == 'v-model') {
+            var name = attr[i].nodeValue; // 获取 v-model 绑定的属性名
+            node.addEventListener('input', function (e) {
+              // 给相应的 data 属性赋值，进而触发该属性的 set 方法
+              vm[name] = e.target.value;
+            });
+            node.value = vm[name]; // 将 data 的值赋给该 node
+            node.removeAttribute('v-model');
+          }
+        };
+
+        new Watcher(vm, node, name, 'input');
+      }
+      // 节点类型为 text
+      if (node.nodeType === 3) {
+        if (reg.test(node.nodeValue)) {
+          var name = RegExp.$1; // 获取匹配到的字符串
+          name = name.trim();
+
+          new Watcher(vm, node, name, 'text');
+        }
+      }
+    }
+
+    function Watcher (vm, node, name, nodeType) {
+      Dep.target = this;
+      this.name = name;
+      this.node = node;
+      this.vm = vm;
+      this.nodeType = nodeType;
+      this.update();
+      Dep.target = null;
+    }
+
+    Watcher.prototype = {
+      update: function () {
+        this.get();
+        if (this.nodeType == 'text') {
+          this.node.nodeValue = this.value;
+        }
+        if (this.nodeType == 'input') {
+          this.node.value = this.value;
+        }
+      },
+      // 获取 data 中的属性值
+      get: function () {
+        this.value = this.vm[this.name]; // 触发相应属性的 get
+      }
+    }
+
+    function Dep () {
+      this.subs = []
+    }
+
+    Dep.prototype = {
+      addSub: function(sub) {
+        this.subs.push(sub);
+      },
+
+      notify: function() {
+        this.subs.forEach(function(sub) {
+          sub.update();
+        });
+      }
+    }
+
+    function Vue (options) {
+      this.data = options.data;
+      var data = this.data;
+
+      observe(data, this);
+
+      var id = options.el;
+      var dom = nodeToFragment(document.getElementById(id), this);
+
+      // 编译完成后，将 dom 返回到 app 中
+      document.getElementById(id).appendChild(dom); 
+    }
+
+    var vm = new Vue({
+      el: 'app',
+      data: {
+        text: 'hello world'
+      }
+    })
+
+class Father{
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+  }
+  add(){
+console.log(this.x + this.y);
+
+  }
+}
+class Son extends Father{
+  constructor(x,y){
+    super();
+    this.x = x;
+    this.y = y;
+  }
+  subtract(){
+    console.log(this.x - this.y);
+    
+  }
+}
+var zhangsan = new Son(5,2);
+zhangsan.add();
+zhangsan.subtract();
+
+
+
+  </script>
+</body>
+</html>
