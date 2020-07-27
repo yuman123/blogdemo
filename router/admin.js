@@ -10,11 +10,12 @@ admin.get('/login',(req,res) =>{
     res.render('admin/login')
 })
 
-admin.post('/login',async (req,res) =>{
+admin.post('/login', async (req,res) =>{
     const {email,password} = req.body;
     if(email.trim().length == 0 ||password.trim().length == 0 ){
        return  res.status(400).send('<h4>邮件地址或者密码错误</h4>');
     }
+    console.log(User);
     let user = await User.findOne({email});
     if(user){
         if(password == user.password){
